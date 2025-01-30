@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-
-use App\Models\Customer;
 use App\Http\Resources\CustomerResource;
+use App\Http\Requests\StoreCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -31,11 +31,16 @@ class CustomerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created customer.
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request): JsonResponse
     {
-        //
+        $customer = Customer::create($request->validated());
+        
+        return response()->json([
+            'message' => 'Customer created successfully.',
+            'data' => new CustomerResource($customer),
+        ], 201);
     }
 
     /**
