@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use App\Services\CustomerService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\CustomerResource;
 use App\Http\Requests\StoreCustomerRequest;
@@ -11,6 +13,13 @@ use App\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
+    use ApiResponse;
+
+    /**
+     * Inject the CustomerService into the controller.
+     */
+    public function __construct(protected CustomerService $customerService) {}
+
     /**
      * Display a a paginated list of customers with search and filtering.
      */
@@ -18,17 +27,10 @@ class CustomerController extends Controller
     {
         $searchText = $request->query('search_text');
         $pageSize = $request->query('page_size', 5);
-        
-        $customers = Customer::when($searchText, function ($query, $searchText) {
-            return $query->where('firstname', 'like', "%$searchText%")
-                ->orWhere('lastname', 'like', "%$searchText%")
-                ->orWhere('email', 'like', "%$searchText%");
-        })->paginate($pageSize);
 
-        return response()->json([
-            'message' => 'Customers retrieved successfully.',
-            'data' => CustomerResource::collection($customers)
-        ]);
+        $customers = $this->customerService->filterCustomers($searchText)->paginate($pageSize);
+
+        return $this->successResponse(CustomerResource::collection($customers), 'Customers retrieved successfully.');
     }
 
     /**
@@ -36,12 +38,9 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request): JsonResponse
     {
-        $customer = Customer::create($request->validated());
-        
-        return response()->json([
-            'message' => 'Customer created successfully.',
-            'data' => new CustomerResource($customer),
-        ], 201);
+        $customer = $this->customerService->createCustomer($request->validated());
+
+        return $this->successResponse(new CustomerResource($customer), 'Customer created successfully.', 201);
     }
 
     /**
@@ -49,11 +48,8 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
-        $customer->update($request->validated());
+        $updatedCustomer = $this->customerService->updateCustomer($customer, $request->validated());
 
-        return response()->json([
-            'message' => 'Customer updated successfully.',
-            'data' => new CustomerResource($customer),
-        ]);
+        return $this->successResponse(new CustomerResource($updatedCustomer), 'Customer updated successfully.');
     }
 }
