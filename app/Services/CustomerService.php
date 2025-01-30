@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Customer;
-use App\Http\Resources\CustomerResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -18,7 +17,7 @@ class CustomerService
             return $query->where('firstname', 'like', "%$searchText%")
                 ->orWhere('lastname', 'like', "%$searchText%")
                 ->orWhere('email', 'like', "%$searchText%");
-        });
+        })->latest();
     }
 
     /**
