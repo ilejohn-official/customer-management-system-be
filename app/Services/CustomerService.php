@@ -4,13 +4,15 @@ namespace App\Services;
 
 use App\Models\Customer;
 use App\Http\Resources\CustomerResource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class CustomerService
 {
     /**
      * Filter customers based on search criteria.
      */
-    public function filterCustomers(?string $searchText)
+    public function filterCustomers(?string $searchText): Builder|Collection
     {
         return Customer::when($searchText, function ($query, $searchText) {
             return $query->where('firstname', 'like', "%$searchText%")
@@ -22,7 +24,7 @@ class CustomerService
     /**
      * Create a new customer.
      */
-    public function createCustomer(array $validatedData)
+    public function createCustomer(array $validatedData): Customer
     {
         return Customer::create($validatedData);
     }
@@ -30,7 +32,7 @@ class CustomerService
     /**
      * Update an existing customer.
      */
-    public function updateCustomer(Customer $customer, array $validatedData)
+    public function updateCustomer(Customer $customer, array $validatedData): Customer
     {
         $customer->update($validatedData);
         

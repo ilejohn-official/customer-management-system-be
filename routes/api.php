@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CustomerController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,4 +21,3 @@ Route::controller(CustomerController::class)->group(function () {
     Route::post('/customers', 'store');
     Route::post('/customers/{customer}', 'update');
 });
-

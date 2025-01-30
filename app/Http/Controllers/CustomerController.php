@@ -30,7 +30,9 @@ class CustomerController extends Controller
 
         $customers = $this->customerService->filterCustomers($searchText)->paginate($pageSize);
 
-        return $this->successResponse(CustomerResource::collection($customers), 'Customers retrieved successfully.');
+        $transformedData = CustomerResource::collection($customers)->toArray($request);
+
+        return $this->successResponse(array_merge($customers->toArray(), ['data' => $transformedData]), 'Customers retrieved successfully.');
     }
 
     /**
