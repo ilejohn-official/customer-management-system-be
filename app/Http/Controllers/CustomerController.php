@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\CustomerResource;
 use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -44,10 +45,15 @@ class CustomerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified customer.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
-        //
+        $customer->update($request->validated());
+
+        return response()->json([
+            'message' => 'Customer updated successfully.',
+            'data' => new CustomerResource($customer),
+        ]);
     }
 }
