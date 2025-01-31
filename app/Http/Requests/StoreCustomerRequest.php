@@ -32,7 +32,7 @@ class StoreCustomerRequest extends FormRequest
             'bankcode' => 'required|string|max:10',
             'accountnumber' => 'required|string|unique:customers,accountnumber',
             'company_id' => 'required|exists:companies,id',
-            'email' => 'required|email|unique:customers,email',
+            'email' => 'required|email|max:255|unique:customers,email',
             'city' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'id_card' => 'nullable|string',
